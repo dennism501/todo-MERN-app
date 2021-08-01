@@ -9,15 +9,14 @@ const getAllTodos = async (req, res) => {
 };
 
 const createTodo = async (req, res) => {
-  const { text } = req.body;
-
-  if (typeof text !== "string") {
+  const { text, dueDate } = req.body;
+  if (typeof text !== "string" && typeof dueDate !== "string") {
     res.status(400);
     res.json({ message: "invalid 'text' expected string" });
     return;
   }
 
-  const todo = { id: generateId(), text, completed: false };
+  const todo = { id: generateId(), text, dueDate, completed: false };
   await database.client.db("todos").collection("todos").insertOne(todo);
   res.status(201);
   res.json(todo);

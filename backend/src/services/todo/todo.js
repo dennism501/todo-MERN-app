@@ -1,32 +1,44 @@
 const { v4: generateId } = require("uuid");
 const database = require("../../database/database");
 
-const getAllTodos = async (req, res) => {
-  const { page, pageSize } = req.query;
+/**
+ *
+ * @param {number} page
+ * @param {number} pageSize
+ * @param {string} todaysDate
+ * @returns
+ */
+const getAllTodos = (page, pageSize, todaysDate) => {
   const todos = database.client.db("todos").collection("todos");
-  const response = await todos
-    .find({})
+  const response = todos
+    .find({
+      $or: [
+        {
+          dueDate: todaysDate,
+        },
+        {
+          dueDate: { $exists: !todaysDate },
+        },
+      ],
+    })
     .sort({ dueDate: -1 })
     .limit(parseInt(pageSize, 10))
     .skip(parseInt(pageSize, 10) * parseInt(page, 10))
     .toArray();
 
-  res.status(200);
-  res.json(response);
+  return response;
 };
 
-const createTodo = async (req, res) => {
-  const { text, dueDate } = req.body;
-  if (typeof text !== "string" && typeof dueDate !== "string") {
-    res.status(400);
-    res.json({ message: "invalid 'text' expected string" });
-    return;
-  }
-
+/**
+ *
+ * @param {string} text
+ * @param {string} dueDate
+ * @returns
+ */
+const createTodo = (text, dueDate) => {
   const todo = { id: generateId(), text, dueDate, completed: false };
-  await database.client.db("todos").collection("todos").insertOne(todo);
-  res.status(201);
-  res.json(todo);
+  database.client.db("todos").collection("todos").insertOne(todo);
+  return todo;
 };
 
 const updateTodo = async (req, res) => {

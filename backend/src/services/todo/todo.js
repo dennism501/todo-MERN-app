@@ -2,8 +2,15 @@ const { v4: generateId } = require("uuid");
 const database = require("../../database/database");
 
 const getAllTodos = async (req, res) => {
+  const { page, pageSize } = req.query;
   const todos = database.client.db("todos").collection("todos");
-  const response = await todos.find({}).toArray();
+  const response = await todos
+    .find({})
+    .sort({ dueDate: -1 })
+    .limit(parseInt(pageSize, 10))
+    .skip(parseInt(pageSize, 10) * parseInt(page, 10))
+    .toArray();
+
   res.status(200);
   res.json(response);
 };

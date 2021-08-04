@@ -51,7 +51,6 @@ const updateTodo = async (req, res) => {
 
 const deleteTodo = (req, res) => {
   const { id } = req.params;
-
   const error = todoService.deleteTodo(id);
   if (error instanceof Error) {
     res.status(500);

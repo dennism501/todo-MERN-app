@@ -2,7 +2,13 @@ const { v4: generateId } = require("uuid");
 const database = require("../database/database");
 
 /**
- *
+ * @function getAllTodos return all todos from the DB
+ * @function createTodo creates a new Todo
+ * @function updateTodo updates a todo based on Id
+ * @function deleteTodo deletes a Todo based on Id
+ */
+
+/**
  * @param {Number} page
  * @param {Number} pageSize
  * @param {String} todayDate
@@ -49,8 +55,8 @@ const createTodo = (todoText, dueDate) => {
 };
 
 /**
- * @param {*} id Id of the todo to be updated
- * @param {*} completed The status of the todo
+ * @param {string} id Id of the todo to be updated
+ * @param {boolean} completed The status of the todo
  * @returns If an error occurs during the DB update, an err is returned
  */
 const updateTodo = (id, completed) => {

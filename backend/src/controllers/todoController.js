@@ -3,6 +3,11 @@ const todoService = require("../services/todo");
 const getAllTodos = async (req, res) => {
   const { page, pageSize, todayDate } = req.query;
   const allTodos = await todoService.getAllTodos(page, pageSize, todayDate);
+  if (allTodos instanceof Error) {
+    res.status(500);
+    res.end();
+  }
+
   res.status(200);
   res.json(allTodos);
 };

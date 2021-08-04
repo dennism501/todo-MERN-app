@@ -44,14 +44,14 @@ const getAllTodos = (page, pageSize, todayDate) => {
  * @param {string} dueDate The due of the day the todo
  * @returns The object of the created todo || The error that is caught during the DB insert
  */
-const createTodo = (todoText, dueDate) => {
-  const todo = { id: generateId(), todoText, dueDate, completed: false };
+const createTodo = (text, dueDate) => {
+  const newTodo = { id: generateId(), todo: text, dueDate, completed: false };
   try {
     database.client.db("todos").collection("todos").insertOne(todo);
   } catch (err) {
     return err;
   }
-  return todo;
+  return newTodo;
 };
 
 /**

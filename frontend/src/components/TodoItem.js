@@ -25,15 +25,24 @@ const TodoItem = ({ todo, toggleTodoCompleted, deleteTodo }) => {
           />
         </ListItemIcon>
         <ListItemText
+          disableTypography
           primary={
             <Typography
-              className={todo.completed ? classes.todoTextCompleted : ""}
+              style={{ textDecoration: todo.completed ? "line-through" : "" }}
               variant="body1"
             >
               {todo.todo}
             </Typography>
           }
-          secondary={todo.dueDate}
+          secondary={
+            <Typography
+              variant="caption"
+              color="textSecondary"
+              style={{ textDecoration: todo.completed ? "line-through" : "" }}
+            >
+              {todo.dueDate}
+            </Typography>
+          }
         />
         <ListItemSecondaryAction>
           <Button

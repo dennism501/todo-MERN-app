@@ -10,8 +10,9 @@ import {
   TextField,
   Checkbox,
 } from "@material-ui/core";
+import TodoList from "./components/TodoList";
 
-const useStyles = makeStyles({
+export const useStyles = makeStyles({
   addTodoContainer: { padding: 10 },
   addTodoButton: { marginLeft: 5 },
   todosContainer: { marginTop: 10, padding: 10 },
@@ -40,29 +41,31 @@ function Todos() {
   const classes = useStyles();
   const [todos, setTodos] = useState([]);
   const [newTodoText, setNewTodoText] = useState("");
+  const [dueDate, setDueDate] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:3001/")
+    fetch("http://localhost:3001/todo/get-todos")
       .then((response) => response.json())
       .then((todos) => setTodos(todos));
   }, [setTodos]);
 
-  function addTodo(text) {
-    fetch("http://localhost:3001/", {
+  function addTodo(text, dueDate) {
+    fetch("http://localhost:3001/todo/create-todo", {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
       method: "POST",
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ text, dueDate }),
     })
       .then((response) => response.json())
       .then((todo) => setTodos([...todos, todo]));
     setNewTodoText("");
+    setDueDate("");
   }
 
   function toggleTodoCompleted(id) {
-    fetch(`http://localhost:3001/${id}`, {
+    fetch(`http://localhost:3001/todo/update/${id}`, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -83,7 +86,7 @@ function Todos() {
   }
 
   function deleteTodo(id) {
-    fetch(`http://localhost:3001/${id}`, {
+    fetch(`http://localhost:3001/todo/delete/${id}`, {
       method: "DELETE",
     }).then(() => setTodos(todos.filter((todo) => todo.id !== id)));
   }
@@ -99,18 +102,20 @@ function Todos() {
             <TextField
               fullWidth
               value={newTodoText}
-              onKeyPress={(event) => {
-                if (event.key === "Enter") {
-                  addTodo(newTodoText);
-                }
-              }}
               onChange={(event) => setNewTodoText(event.target.value)}
+            />
+
+            <TextField
+              fullWidth
+              value={dueDate}
+              onKeyPress={(event) => {}}
+              onChange={(event) => setDueDate(event.target.value)}
             />
           </Box>
           <Button
             className={classes.addTodoButton}
             startIcon={<Icon>add</Icon>}
-            onClick={() => addTodo(newTodoText)}
+            onClick={() => addTodo(newTodoText, dueDate)}
           >
             Add
           </Button>
@@ -118,8 +123,13 @@ function Todos() {
       </Paper>
       {todos.length > 0 && (
         <Paper className={classes.todosContainer}>
+          <TodoList
+            todos={todos}
+            deleteTodo={deleteTodo}
+            toggleTodoCompleted={toggleTodoCompleted}
+          />
           <Box display="flex" flexDirection="column" alignItems="stretch">
-            {todos.map(({ id, text, completed }) => (
+            {todos.map(({ id, todo, completed }) => (
               <Box
                 key={id}
                 display="flex"
@@ -136,7 +146,7 @@ function Todos() {
                     className={completed ? classes.todoTextCompleted : ""}
                     variant="body1"
                   >
-                    {text}
+                    {todo}
                   </Typography>
                 </Box>
                 <Button

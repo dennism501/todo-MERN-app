@@ -13,7 +13,7 @@ database.connect = async function connect() {
     );
     await database.client.db("todos").command({ ping: 1 });
     console.log("Connected successfully to server 🚀");
-  } finally {
-    await database.client.close();
+  } catch (err) {
+    console.error(err);
   }
 };
